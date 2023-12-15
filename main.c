@@ -161,37 +161,65 @@ Token* consume(Lexer* lexer, TokenType type, const char* message) {
 void parseReserveRoom(Lexer* lexer) {
     // Consume 'reserve' keyword
     Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reserve'");
+    free(token->value);
+    free(token);
 
     // Consume 'room' keyword
     token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'room'");
+    free(token->value);
+    free(token);
 
     // Consume room type
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected room type");
+    char* roomType = strdup(token->value);
+    free(token->value);
+    free(token);
 
     // Consume 'from' keyword
     token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'from'");
+    free(token->value);
+    free(token);
 
     // Consume check-in date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-in date");
+    char* checkInDate = strdup(token->value);
+    free(token->value);
+    free(token);
 
     // Consume 'to' keyword
     token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'to'");
+    free(token->value);
+    free(token);
 
     // Consume check-out date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-out date");
+    char* checkOutDate = strdup(token->value);
+    free(token->value);
+    free(token);
 
     // Consume 'for' keyword
     token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
+    free(token->value);
+    free(token);
 
     // Consume guest name
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected guest name");
+    char* guestName = strdup(token->value);
+    free(token->value);
+    free(token);
 
     // Here you would typically construct an AST node for this statement
     // For simplicity, we'll just print it
-    printf("Parsed a reservation statement\n");
+    printf("Parsed a reserve room statement for room type %s from %s to %s for guest %s\n", 
+           roomType, checkInDate, checkOutDate, guestName);
 
-    // Normally, you would also free the tokens after using them
+    // Free the duplicated strings after constructing the AST node
+    free(roomType);
+    free(checkInDate);
+    free(checkOutDate);
+    free(guestName);
 }
+
 
 void parseUpdateReservation(Lexer* lexer) {
     // Consume 'update' keyword
