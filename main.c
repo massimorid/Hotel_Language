@@ -550,3 +550,147 @@ int main() {
 
     return 0;
 }
+
+
+
+
+// semantic analysis functions:
+
+typedef struct SymbolTable {
+    char** identifiers;
+    int count;
+    int capacity;
+} SymbolTable;
+
+SymbolTable* createSymbolTable() {
+    SymbolTable* table = (SymbolTable*)malloc(sizeof(SymbolTable));
+    table->identifiers = NULL;
+    table->count = 0;
+    table->capacity = 0;
+    return table;
+}
+
+void freeSymbolTable(SymbolTable* table) {
+    for (int i = 0; i < table->count; i++) {
+        free(table->identifiers[i]);
+    }
+    free(table->identifiers);
+    free(table);
+}
+
+int symbolTableContains(SymbolTable* table, const char* identifier) {
+    for (int i = 0; i < table->count; i++) {
+        if (strcmp(table->identifiers[i], identifier) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void symbolTableAdd(SymbolTable* table, const char* identifier) {
+    if (symbolTableContains(table, identifier)) {
+        fprintf(stderr, "Semantic Error: Duplicate identifier '%s'\n", identifier);
+        exit(1);
+    }
+    if (table->count == table->capacity) {
+        table->capacity = table->capacity < 8 ? 8 : table->capacity * 2;
+        table->identifiers = (char**)realloc(table->identifiers, table->capacity * sizeof(char*));
+    }
+    table->identifiers[table->count++] = strdup(identifier);
+}
+
+int isValidRoomType(const char* roomType) {
+    // Assuming there's a function that checks if the room type is valid.
+    // For demonstration, let's say "deluxe" and "standard" are valid room types.
+    return strcmp(roomType, "deluxe") == 0 || strcmp(roomType, "standard") == 0;
+}
+
+int isValidDate(const char* date) {
+    // Simple check for date format YYYY-MM-DD
+    return strlen(date) == 10 && date[4] == '-' && date[7] == '-';
+}
+
+int isAfter(const char* checkInDate, const char* checkOutDate) {
+    // This function would compare the dates to ensure check-out is after check-in.
+    // For simplicity, let's assume a function that correctly compares the date strings.
+    // ...
+
+    return 1; // Assume it returns true for demonstration purposes.
+}
+
+void checkReserveRoom(ASTNode* node, SymbolTable* table) {
+    if (!isValidRoomType(node->children[0]->value)) {
+        fprintf(stderr, "Semantic Error: Invalid room type '%s'\n", node->children[0]->value);
+        exit(1);
+    }
+
+    if (!isValidDate(node->children[1]->value) || !isValidDate(node->children[2]->value)) {
+        fprintf(stderr, "Semantic Error: Invalid date format\n");
+        exit(1);
+    }
+
+    if (!isAfter(node->children[1]->value, node->children[2]->value)) {
+        fprintf(stderr, "Semantic Error: Check-out date must be after check-in date\n");
+        exit(1);
+    }
+
+    if (strlen(node->children[3]->value) == 0) {
+        fprintf(stderr, "Semantic Error: Guest name cannot be empty\n");
+        exit(1);
+    }
+}
+
+void checkUpdateReservation(ASTNode* node, SymbolTable* table) {
+    if (!symbolTableContains(table, node->children[0]->value)) {
+        fprintf(stderr, "Semantic Error: Reservation ID '%s' not found\n", node->children[0]->value);
+        exit(1);
+    }
+
+    // Let's say the only updatable attribute is "roomType"
+    if (strcmp(node->children[1]->value, "roomType") != 0) {
+        fprintf(stderr, "Semantic Error: Can only update 'roomType'\n");
+        exit(1);
+    }
+
+    if (!isValidRoomType(node->children[2]->value)) {
+        fprintf(stderr, "Semantic Error: Invalid new room type '%s'\n", node->children[2]->value);
+        exit(1);
+    }
+}
+
+void performSemanticAnalysis(ASTNode* node, SymbolTable* table) {
+    switch (node->type) {
+        case NODE_TYPE_RESERVE_ROOM:
+            checkReserveRoom(node, table);
+            break;
+        case NODE_TYPE_UPDATE_RESERVATION:
+            checkUpdateReservation(node, table);
+            break;
+        // ... handle other cases
+    }
+
+    // Recursively call performSemanticAnalysis for all children of the current node
+    for (int i = 0; i < node->children_count; i++) {
+        performSemanticAnalysis(node->children[i], table);
+    }
+}
+
+
+int main() {
+    // ... Lexer and parser setup ...
+
+    // After constructing the AST
+    ASTNode* ast = NULL; // Constructed from parser
+    SymbolTable* table = createSymbolTable();
+
+    // Perform semantic analysis
+    performSemanticAnalysis(ast, table);
+
+    // Proceed with code generation or interpretation...
+
+    freeASTNode(ast);
+    freeSymbolTable(table);
+    return 0;
+}
+
+
