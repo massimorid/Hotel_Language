@@ -3,6 +3,43 @@
 #include <string.h>
 #include <ctype.h>
 
+typedef enum {
+    NODE_TYPE_RESERVE_ROOM,
+    NODE_TYPE_UPDATE_RESERVATION,
+    NODE_TYPE_CANCEL_RESERVATION,
+    NODE_TYPE_CHECK_ROOM_AVAILABILITY,
+    NODE_TYPE_CREATE_GUEST_PROFILE,
+    NODE_TYPE_GENERATE_INVOICE,
+    NODE_TYPE_REQUEST_SERVICE,
+} NodeType;
+
+typedef struct ASTNode {
+    NodeType type;
+    char* value;
+    struct ASTNode** children;
+    int children_count;
+} ASTNode;
+
+ASTNode* createASTNode(NodeType type) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->type = type;
+    node->value = NULL;
+    node->children = NULL;
+    node->children_count = 0;
+    return node;
+}
+
+void freeASTNode(ASTNode* node) {
+    if (node != NULL) {
+        free(node->value);
+        for (int i = 0; i < node->children_count; ++i) {
+            freeASTNode(node->children[i]);
+        }
+        free(node->children);
+        free(node);
+    }
+}
+
 // Token types
 typedef enum {
     TOKEN_TYPE_KEYWORD,
