@@ -195,320 +195,264 @@ Token* consume(Lexer* lexer, TokenType type, const char* message) {
 }
 
 // The entry point to parse a reservation statement
-void parseReserveRoom(Lexer* lexer) {
-    // Consume 'reserve' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reserve'");
-    free(token->value);
-    free(token);
+ASTNode* parseReserveRoom(Lexer* lexer) {
+    ASTNode* reserveNode = createASTNode(NODE_TYPE_RESERVE_ROOM);
 
-    // Consume 'room' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'room'");
-    free(token->value);
-    free(token);
+    // Assume all fields (room type, check-in date, etc.) are stored as children
+    reserveNode->children = (ASTNode**)malloc(sizeof(ASTNode*) * 4); // Four fields for reserve room
+    reserveNode->children_count = 4;
 
-    // Consume room type
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected room type");
-    char* roomType = strdup(token->value);
+    // Consume 'reserve' and 'room' keywords (no need to create AST nodes for these)
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reserve'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'room'");
+
+    // Consume and process room type
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected room type");
+    ASTNode* roomTypeNode = createASTNode(NODE_TYPE_RESERVE_ROOM);
+    roomTypeNode->value = strdup(token->value);
+    reserveNode->children[0] = roomTypeNode;
     free(token->value);
     free(token);
 
     // Consume 'from' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'from'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'from'");
 
-    // Consume check-in date
+    // Consume and process check-in date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-in date");
-    char* checkInDate = strdup(token->value);
+    ASTNode* checkInDateNode = createASTNode(NODE_TYPE_RESERVE_ROOM);
+    checkInDateNode->value = strdup(token->value);
+    reserveNode->children[1] = checkInDateNode;
     free(token->value);
     free(token);
 
     // Consume 'to' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'to'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'to'");
 
-    // Consume check-out date
+    // Consume and process check-out date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-out date");
-    char* checkOutDate = strdup(token->value);
+    ASTNode* checkOutDateNode = createASTNode(NODE_TYPE_RESERVE_ROOM);
+    checkOutDateNode->value = strdup(token->value);
+    reserveNode->children[2] = checkOutDateNode;
     free(token->value);
     free(token);
 
     // Consume 'for' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
 
-    // Consume guest name
+    // Consume and process guest name
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected guest name");
-    char* guestName = strdup(token->value);
+    ASTNode* guestNameNode = createASTNode(NODE_TYPE_RESERVE_ROOM);
+    guestNameNode->value = strdup(token->value);
+    reserveNode->children[3] = guestNameNode;
     free(token->value);
     free(token);
 
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a reserve room statement for room type %s from %s to %s for guest %s\n", 
-           roomType, checkInDate, checkOutDate, guestName);
-
-    // Free the duplicated strings after constructing the AST node
-    free(roomType);
-    free(checkInDate);
-    free(checkOutDate);
-    free(guestName);
+    return reserveNode;
 }
 
 
-void parseUpdateReservation(Lexer* lexer) {
-    // Consume 'update' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'update'");
-    free(token->value);
-    free(token);
+}
+ASTNode* parseUpdateReservation(Lexer* lexer) {
+    ASTNode* updateNode = createASTNode(NODE_TYPE_UPDATE_RESERVATION);
 
-    // Consume 'reservation' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
-    free(token->value);
-    free(token);
+    // Assume all fields (reservation ID, attribute, new value) are stored as children
+    updateNode->children = (ASTNode**)malloc(sizeof(ASTNode*) * 3); // Three fields for update reservation
+    updateNode->children_count = 3;
 
-    // Consume reservation ID
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
-    char* reservationID = strdup(token->value);
+    // Consume 'update' and 'reservation' keywords (no need to create AST nodes for these)
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'update'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
+
+    // Consume and process reservation ID
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
+    ASTNode* reservationIDNode = createASTNode(NODE_TYPE_UPDATE_RESERVATION);
+    reservationIDNode->value = strdup(token->value);
+    updateNode->children[0] = reservationIDNode;
     free(token->value);
     free(token);
 
     // Consume 'with' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'with'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'with'");
 
-    // Consume attribute to update
+    // Consume and process attribute to update
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected attribute to update");
-    char* attribute = strdup(token->value);
+    ASTNode* attributeNode = createASTNode(NODE_TYPE_UPDATE_RESERVATION);
+    attributeNode->value = strdup(token->value);
+    updateNode->children[1] = attributeNode;
     free(token->value);
     free(token);
 
-    // Consume new value for the attribute
+    // Consume and process new value for the attribute
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected new value for attribute");
-    char* newValue = strdup(token->value);
+    ASTNode* newValueNode = createASTNode(NODE_TYPE_UPDATE_RESERVATION);
+    newValueNode->value = strdup(token->value);
+    updateNode->children[2] = newValueNode;
     free(token->value);
     free(token);
 
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed an update reservation statement for reservation ID %s, updating %s to %s\n", reservationID, attribute, newValue);
-
-    // Free the duplicated strings after constructing the AST node
-    free(reservationID);
-    free(attribute);
-    free(newValue);
+    return updateNode;
 }
 
-void parseCancelReservation(Lexer* lexer) {
-    // Consume 'cancel' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'cancel'");
+ASTNode* parseCancelReservation(Lexer* lexer) {
+    ASTNode* cancelNode = createASTNode(NODE_TYPE_CANCEL_RESERVATION);
+
+    // There is only one field (reservation ID) for cancel reservation
+    cancelNode->children = (ASTNode**)malloc(sizeof(ASTNode*)); // One field for reservation ID
+    cancelNode->children_count = 1;
+
+    // Consume 'cancel' and 'reservation' keywords (no need to create AST nodes for these)
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'cancel'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
+
+    // Consume and process reservation ID
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
+    ASTNode* reservationIDNode = createASTNode(NODE_TYPE_CANCEL_RESERVATION);
+    reservationIDNode->value = strdup(token->value);
+    cancelNode->children[0] = reservationIDNode;
     free(token->value);
     free(token);
 
-    // Consume 'reservation' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
-    free(token->value);
-    free(token);
-
-    // Consume reservation ID
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
-    char* reservationID = strdup(token->value);
-    free(token->value);
-    free(token);
-
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a cancel reservation statement for reservation ID %s\n", reservationID);
-
-    // Free the duplicated string after constructing the AST node
-    free(reservationID);
+    return cancelNode;
 }
 
-void parseCheckRoomAvailability(Lexer* lexer) {
-    // Consume 'check' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'check'");
-    free(token->value);
-    free(token);
+ASTNode* parseCheckRoomAvailability(Lexer* lexer) {
+    ASTNode* checkRoomAvailabilityNode = createASTNode(NODE_TYPE_CHECK_ROOM_AVAILABILITY);
 
-    // Consume 'room' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'room'");
-    free(token->value);
-    free(token);
+    // There are three fields (room type, check-in date, check-out date)
+    checkRoomAvailabilityNode->children = (ASTNode**)malloc(sizeof(ASTNode*) * 3);
+    checkRoomAvailabilityNode->children_count = 3;
 
-    // Consume 'availability' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'availability'");
-    free(token->value);
-    free(token);
+    // Consume 'check', 'room', and 'availability' keywords
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'check'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'room'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'availability'");
 
-    // Consume room type
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected room type");
-    char* roomType = strdup(token->value);
+    // Consume and process room type
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected room type");
+    ASTNode* roomTypeNode = createASTNode(NODE_TYPE_CHECK_ROOM_AVAILABILITY);
+    roomTypeNode->value = strdup(token->value);
+    checkRoomAvailabilityNode->children[0] = roomTypeNode;
     free(token->value);
     free(token);
 
     // Consume 'from' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'from'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'from'");
 
-    // Consume check-in date
+    // Consume and process check-in date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-in date");
-    char* checkInDate = strdup(token->value);
+    ASTNode* checkInDateNode = createASTNode(NODE_TYPE_CHECK_ROOM_AVAILABILITY);
+    checkInDateNode->value = strdup(token->value);
+    checkRoomAvailabilityNode->children[1] = checkInDateNode;
     free(token->value);
     free(token);
 
     // Consume 'to' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'to'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'to'");
 
-    // Consume check-out date
+    // Consume and process check-out date
     token = consume(lexer, TOKEN_TYPE_LITERAL, "Expected check-out date");
-    char* checkOutDate = strdup(token->value);
+    ASTNode* checkOutDateNode = createASTNode(NODE_TYPE_CHECK_ROOM_AVAILABILITY);
+    checkOutDateNode->value = strdup(token->value);
+    checkRoomAvailabilityNode->children[2] = checkOutDateNode;
     free(token->value);
     free(token);
 
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a check room availability statement for room type %s from %s to %s\n", roomType, checkInDate, checkOutDate);
-
-    // Free the duplicated strings after constructing the AST node
-    free(roomType);
-    free(checkInDate);
-    free(checkOutDate);
+    return checkRoomAvailabilityNode;
 }
 
-void parseCreateGuestProfile(Lexer* lexer) {
-    // Consume 'create' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'create'");
+
+ASTNode* parseCreateGuestProfile(Lexer* lexer) {
+    ASTNode* createGuestProfileNode = createASTNode(NODE_TYPE_CREATE_GUEST_PROFILE);
+
+    // Assume two fields (guest name, guest contact) are stored as children
+    createGuestProfileNode->children = (ASTNode**)malloc(sizeof(ASTNode*) * 2); // Two fields: name and contact
+    createGuestProfileNode->children_count = 2;
+
+    // Consume 'create', 'guest', 'profile', 'with', 'name', 'and', 'contact' keywords
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'create'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'guest'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'profile'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'with'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'name'");
+    
+    // Consume and process guest name
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected guest name");
+    ASTNode* guestNameNode = createASTNode(NODE_TYPE_CREATE_GUEST_PROFILE);
+    guestNameNode->value = strdup(token->value);
+    createGuestProfileNode->children[0] = guestNameNode;
     free(token->value);
     free(token);
 
-    // Consume 'guest' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'guest'");
-    free(token->value);
-    free(token);
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'and'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'contact'");
 
-    // Consume 'profile' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'profile'");
-    free(token->value);
-    free(token);
-
-    // Consume 'with' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'with'");
-    free(token->value);
-    free(token);
-
-    // Consume 'name' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'name'");
-    free(token->value);
-    free(token);
-
-    // Consume guest name
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected guest name");
-    char* guestName = strdup(token->value);
-    free(token->value);
-    free(token);
-
-    // Consume 'and' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'and'");
-    free(token->value);
-    free(token);
-
-    // Consume 'contact' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'contact'");
-    free(token->value);
-    free(token);
-
-    // Consume guest contact
+    // Consume and process guest contact
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected guest contact");
-    char* guestContact = strdup(token->value);
+    ASTNode* guestContactNode = createASTNode(NODE_TYPE_CREATE_GUEST_PROFILE);
+    guestContactNode->value = strdup(token->value);
+    createGuestProfileNode->children[1] = guestContactNode;
     free(token->value);
     free(token);
 
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a create guest profile statement for guest name %s with contact %s\n", guestName, guestContact);
+    return createGuestProfileNode;
+}
+ASTNode* parseGenerateInvoice(Lexer* lexer) {
+    ASTNode* generateInvoiceNode = createASTNode(NODE_TYPE_GENERATE_INVOICE);
 
-    // Free the duplicated strings after constructing the AST node
-    free(guestName);
-    free(guestContact);
+    // There is only one field (reservation ID) for generate invoice
+    generateInvoiceNode->children = (ASTNode**)malloc(sizeof(ASTNode*)); // One field for reservation ID
+    generateInvoiceNode->children_count = 1;
+
+    // Consume 'generate', 'invoice', 'for', and 'reservation' keywords
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'generate'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'invoice'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
+
+    // Consume and process reservation ID
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
+    ASTNode* reservationIDNode = createASTNode(NODE_TYPE_GENERATE_INVOICE);
+    reservationIDNode->value = strdup(token->value);
+    generateInvoiceNode->children[0] = reservationIDNode;
+    free(token->value);
+    free(token);
+
+    return generateInvoiceNode;
 }
 
-void parseGenerateInvoice(Lexer* lexer) {
-    // Consume 'generate' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'generate'");
+ASTNode* parseRequestService(Lexer* lexer) {
+    ASTNode* requestServiceNode = createASTNode(NODE_TYPE_REQUEST_SERVICE);
+
+    // There are two fields (service name, reservation ID) for request service
+    requestServiceNode->children = (ASTNode**)malloc(sizeof(ASTNode*) * 2); // Two fields: service name and reservation ID
+    requestServiceNode->children_count = 2;
+
+    // Consume 'request' keyword (no need to create an AST node for this)
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'request'");
+
+    // Consume and process service name
+    Token* token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected service name");
+    ASTNode* serviceNameNode = createASTNode(NODE_TYPE_REQUEST_SERVICE);
+    serviceNameNode->value = strdup(token->value);
+    requestServiceNode->children[0] = serviceNameNode;
     free(token->value);
     free(token);
 
-    // Consume 'invoice' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'invoice'");
-    free(token->value);
-    free(token);
+    // Consume 'for' and 'reservation' keywords
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
+    consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
 
-    // Consume 'for' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
-    free(token->value);
-    free(token);
-
-    // Consume 'reservation' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
-    free(token->value);
-    free(token);
-
-    // Consume reservation ID
+    // Consume and process reservation ID
     token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
-    char* reservationID = strdup(token->value);
+    ASTNode* reservationIDNode = createASTNode(NODE_TYPE_REQUEST_SERVICE);
+    reservationIDNode->value = strdup(token->value);
+    requestServiceNode->children[1] = reservationIDNode;
     free(token->value);
     free(token);
 
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a generate invoice statement for reservation ID %s\n", reservationID);
-
-    // Free the duplicated string after constructing the AST node
-    free(reservationID);
+    return requestServiceNode;
 }
 
-void parseRequestService(Lexer* lexer) {
-    // Consume 'request' keyword
-    Token* token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'request'");
-    free(token->value);
-    free(token);
-
-    // Consume service name
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected service name");
-    char* serviceName = strdup(token->value);
-    free(token->value);
-    free(token);
-
-    // Consume 'for' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'for'");
-    free(token->value);
-    free(token);
-
-    // Consume 'reservation' keyword
-    token = consume(lexer, TOKEN_TYPE_KEYWORD, "Expected 'reservation'");
-    free(token->value);
-    free(token);
-
-    // Consume reservation ID
-    token = consume(lexer, TOKEN_TYPE_IDENTIFIER, "Expected reservation ID");
-    char* reservationID = strdup(token->value);
-    free(token->value);
-    free(token);
-
-    // Here you would typically construct an AST node for this statement
-    // For simplicity, we'll just print it
-    printf("Parsed a request service statement for service '%s' on reservation ID %s\n", serviceName, reservationID);
-
-    // Free the duplicated strings after constructing the AST node
-    free(serviceName);
-    free(reservationID);
-}
 
 void parseStatement(Lexer* lexer) {
     Token* token = nextToken(lexer);
