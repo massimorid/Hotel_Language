@@ -552,9 +552,7 @@ int main() {
 }
 
 
-
-
-// semantic analysis functions:
+// semantic analysis functions
 
 typedef struct SymbolTable {
     char** identifiers;
@@ -666,9 +664,28 @@ void performSemanticAnalysis(ASTNode* node, SymbolTable* table) {
         case NODE_TYPE_UPDATE_RESERVATION:
             checkUpdateReservation(node, table);
             break;
-        // ... handle other cases
-    }
+        case NODE_TYPE_CANCEL_RESERVATION:
+            checkCancelReservation(node, table);
+            break;
+        case NODE_TYPE_CHECK_ROOM_AVAILABILITY:
+            checkCheckRoomAvailability(node, table);
+            break;
+        case NODE_TYPE_CREATE_GUEST_PROFILE:
+            checkCreateGuestProfile(node, table);
+            break;
+        case NODE_TYPE_GENERATE_INVOICE:
+            checkGenerateInvoice(node, table);
+            break;
+        case NODE_TYPE_REQUEST_SERVICE:
+            checkRequestService(node, table);
+            break;
+    
 
+    // Recursively call performSemanticAnalysis for all children of the current node
+    for (int i = 0; i < node->children_count; i++) {
+        performSemanticAnalysis(node->children[i], table);
+    }
+}
     // Recursively call performSemanticAnalysis for all children of the current node
     for (int i = 0; i < node->children_count; i++) {
         performSemanticAnalysis(node->children[i], table);
@@ -694,6 +711,7 @@ int main() {
 }
 
 
+
 // code generator/interpreter
 
 void interpretAST(ASTNode* node) {
@@ -709,7 +727,21 @@ void interpretAST(ASTNode* node) {
         case NODE_TYPE_CANCEL_RESERVATION:
             interpretCancelReservation(node);
             break;
-        // ... other cases ...
+        case NODE_TYPE_CHECK_ROOM_AVAILABILITY:
+            interpretCheckRoomAvailability(node);
+            break;
+        case NODE_TYPE_CREATE_GUEST_PROFILE:
+            interpretCreateGuestProfile(node);
+            break;
+        case NODE_TYPE_GENERATE_INVOICE:
+            interpretGenerateInvoice(node);
+            break;
+        case NODE_TYPE_REQUEST_SERVICE:
+            interpretRequestService(node);
+            break;
+
+
+
         default:
             fprintf(stderr, "Unknown node type in interpreter\n");
             exit(1);
@@ -788,6 +820,3 @@ void interpretRequestService(ASTNode* node) {
 
     // In a real system, this would involve adding a service request to your system linked to the reservation
 }
-
-
-
