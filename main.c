@@ -694,3 +694,100 @@ int main() {
 }
 
 
+// code generator/interpreter
+
+void interpretAST(ASTNode* node) {
+    if (node == NULL) return;
+
+    switch (node->type) {
+        case NODE_TYPE_RESERVE_ROOM:
+            interpretReserveRoom(node);
+            break;
+        case NODE_TYPE_UPDATE_RESERVATION:
+            interpretUpdateReservation(node);
+            break;
+        case NODE_TYPE_CANCEL_RESERVATION:
+            interpretCancelReservation(node);
+            break;
+        // ... other cases ...
+        default:
+            fprintf(stderr, "Unknown node type in interpreter\n");
+            exit(1);
+    }
+
+    for (int i = 0; i < node->children_count; i++) {
+        interpretAST(node->children[i]);
+    }
+}
+
+// function speficific nodes
+
+void interpretReserveRoom(ASTNode* node) {
+    char* roomType = node->children[0]->value;
+    char* checkInDate = node->children[1]->value;
+    char* checkOutDate = node->children[2]->value;
+    char* guestName = node->children[3]->value;
+
+    // Here, you would have the logic to reserve a room in your system
+    printf("Reserving a %s room from %s to %s for %s\n", roomType, checkInDate, checkOutDate, guestName);
+}
+
+void interpretUpdateReservation(ASTNode* node) {
+    char* reservationID = node->children[0]->value;
+    char* attribute = node->children[1]->value;
+    char* newValue = node->children[2]->value;
+
+    // Logic to update a reservation
+    printf("Updating reservation %s: %s to %s\n", reservationID, attribute, newValue);
+}
+
+void interpretCancelReservation(ASTNode* node) {
+    char* reservationID = node->children[0]->value;
+
+    // Logic to cancel a reservation
+    printf("Cancelling reservation with ID %s\n", reservationID);
+}
+
+void interpretCheckRoomAvailability(ASTNode* node) {
+    char* roomType = node->children[0]->value;
+    char* checkInDate = node->children[1]->value;
+    char* checkOutDate = node->children[2]->value;
+
+    // Here, you would check the availability of the room in your system
+    printf("Checking availability for a %s room from %s to %s\n", roomType, checkInDate, checkOutDate);
+
+    // In a real system, you would query the database and return the result
+}
+
+void interpretCreateGuestProfile(ASTNode* node) {
+    char* guestName = node->children[0]->value;
+    char* guestContact = node->children[1]->value;
+
+    // Logic to create a guest profile
+    printf("Creating guest profile for %s with contact %s\n", guestName, guestContact);
+
+    // In a real system, you would add this information to your database
+}
+
+
+void interpretGenerateInvoice(ASTNode* node) {
+    char* reservationID = node->children[0]->value;
+
+    // Logic to generate an invoice
+    printf("Generating invoice for reservation ID %s\n", reservationID);
+
+    // In a real system, this would involve calculating costs and creating an invoice record
+}
+
+void interpretRequestService(ASTNode* node) {
+    char* serviceName = node->children[0]->value;
+    char* reservationID = node->children[1]->value;
+
+    // Logic to request a service
+    printf("Requesting service '%s' for reservation ID %s\n", serviceName, reservationID);
+
+    // In a real system, this would involve adding a service request to your system linked to the reservation
+}
+
+
+
