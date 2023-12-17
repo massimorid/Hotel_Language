@@ -3,11 +3,9 @@
 
 #include "lexer.h"
 
-
-
 typedef struct ASTNode {
     enum { RESERVATION_NODE, UPDATE_NODE, CANCEL_NODE, CHECK_NODE, CREATE_GUEST_PROFILE_NODE, GENERATE_INVOICE_NODE, REQUEST_SERVICE_NODE } type;
-    struct ASTNode *next; // Next node in the list
+    struct ASTNode *next; 
 } ASTNode;
 
 
@@ -57,7 +55,6 @@ typedef struct {
 } RequestServiceNode;
 
 
-
 ReservationNode* parseReservation(const char **input);
 UpdateNode* parseUpdate(const char **input);
 CancelNode* parseCancel(const char **input);
@@ -65,6 +62,6 @@ CheckNode* parseCheck(const char **input);
 CreateGuestProfileNode* parseCreateGuestProfile(const char **input);
 GenerateInvoiceNode* parseGenerateInvoice(const char **input);
 RequestServiceNode* parseRequestService(const char **input);
-ASTNode* parseStatement(const char **input); // This will return a generic ASTNode
+ASTNode* parseStatement(const char **input); 
 
 #endif 
