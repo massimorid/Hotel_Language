@@ -28,7 +28,7 @@ void executeProgram(ASTNode *ast) {
                 printf("Unknown node type\n");
                 break;
         }
-        ast = ast->next; // Move to the next node in the list
+        ast = ast->next; 
     }
 }
 
@@ -39,7 +39,6 @@ void executeReservation(ReservationNode *node) {
         return;
     }
 
-    // Example logic for handling a reservation
     printf("Processing Reservation:\n");
     printf(" - Room Type: %s\n", node->roomType);
     printf(" - Check-in Date: %s\n", node->checkInDate);
