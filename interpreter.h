@@ -1,10 +1,8 @@
-// interpreter.h
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include "parser.h" // Include to get AST node definitions
+#include "parser.h" 
 
-// Function declarations for executing each type of AST node
 void executeProgram(ASTNode *ast);
 void executeReservation(ReservationNode *node);
 void executeUpdate(UpdateNode *node);
