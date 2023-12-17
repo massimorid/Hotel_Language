@@ -1,6 +1,3 @@
-Hotel Management DSL Documentation
-==================================
-
 Language Documentation
 ======================
 
