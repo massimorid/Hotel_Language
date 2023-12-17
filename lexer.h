@@ -20,8 +20,7 @@ typedef struct {
     char value[100];
 } Token;
 
-// Function declarations
 int isKeyword(const char *str);
 Token getNextToken(const char **input);
 
-#endif // LEXER_H
+#endif 
