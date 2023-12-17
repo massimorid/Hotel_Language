@@ -19,8 +19,6 @@ int isKeyword(const char *str) {
 }
 
 // Lexer function to get the next token
-
-// Lexer function to get the next token
 Token getNextToken(const char **input) {
     const char *reader = *input;
     Token token;
@@ -36,7 +34,7 @@ Token getNextToken(const char **input) {
         return token;
     }
 
-    // Check for symbols
+    // Code to check for symbols
     switch (*reader) {
         case ',':
         case ':':
