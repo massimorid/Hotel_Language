@@ -1,7 +1,5 @@
-// interpreter.c
 #include "interpreter.h"
 
-// Execute the entire program by traversing the AST and executing each node
 void executeProgram(ASTNode *ast) {
     while (ast != NULL) {
         switch (ast->type) {
@@ -57,7 +55,6 @@ void executeUpdate(UpdateNode *node) {
         return;
     }
 
-    // Simulated logic for updating a reservation
     printf("Simulating update operation:\n");
     printf(" - Reservation ID: %s\n", node->reservationId);
     printf(" - Attribute to Update: %s\n", node->attribute);
@@ -70,7 +67,6 @@ void executeCancel(CancelNode *node) {
         return;
     }
 
-    // Simulated logic for handling a cancellation
     printf("Simulating cancellation operation:\n");
     printf(" - Reservation ID to Cancel: %s\n", node->reservationId);
 }
@@ -82,7 +78,6 @@ void executeCancel(CancelNode *node) {
         return;
     }
 
-    // Simulated logic for handling a cancellation
     printf("Simulating cancellation operation:\n");
     printf(" - Reservation ID to Cancel: %s\n", node->reservationId);
 }
@@ -94,7 +89,6 @@ void executeCreateGuestProfile(CreateGuestProfileNode *node){
         return;
     }
 
-    // Simulated logic for creating a guest profile
     printf("Simulating creation of a guest profile:\n");
     printf(" - Guest Name: %s\n", node->guestName);
     printf(" - Guest Contact: %s\n", node->guestContact);
